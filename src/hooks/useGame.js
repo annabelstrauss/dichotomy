@@ -38,16 +38,53 @@ export function useGame(gameCode) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'games', filter: `id=eq.${gameCode}` },
         (payload) => {
           if (payload.new) setGame(payload.new)
+
+          // Bulk placement deletes often don't reliably fan out to every client over Realtime.
+          // When the game (re)enters self_placement from another phase, resync from DB and drop
+          // local optimistic dots so everyone's board matches the host after "next round".
+          const newRow = payload.new
+          const oldRow = payload.old
+          const ev = payload.eventType
+          const entersSelfPlacement =
+            newRow?.state === 'self_placement' &&
+            (ev === 'INSERT' ||
+              (ev === 'UPDATE' && (!oldRow || oldRow.state !== 'self_placement')))
+
+          if (entersSelfPlacement) {
+            setOptimisticPlacements([])
+            void Promise.all([
+              supabase
+                .from('placements')
+                .select('*')
+                .eq('game_id', gameCode)
+                .then(({ data }) => setPlacements(data ?? [])),
+              supabase
+                .from('assignments')
+                .select('*')
+                .eq('game_id', gameCode)
+                .then(({ data }) => setAssignments(data ?? [])),
+            ])
+          }
         }
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'players', filter: `game_id=eq.${gameCode}` },
         () => fetchAll()
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments', filter: `game_id=eq.${gameCode}` },
-        () => supabase.from('assignments').select('*').eq('game_id', gameCode).then(({ data }) => data && setAssignments(data))
+        () =>
+          supabase
+            .from('assignments')
+            .select('*')
+            .eq('game_id', gameCode)
+            .then(({ data }) => setAssignments(data ?? []))
       )
       .on('postgres_changes', { event: '*', schema: 'public', table: 'placements', filter: `game_id=eq.${gameCode}` },
-        () => supabase.from('placements').select('*').eq('game_id', gameCode).then(({ data }) => data && setPlacements(data))
+        () =>
+          supabase
+            .from('placements')
+            .select('*')
+            .eq('game_id', gameCode)
+            .then(({ data }) => setPlacements(data ?? []))
       )
       .subscribe()
 
@@ -125,11 +162,39 @@ export function useGame(gameCode) {
     await supabase.from('games').update({ state: 'results' }).eq('id', gameCode)
   }
 
+  async function startNextRound(axes) {
+    if (!isHost) return
+    const top = (axes?.top || 'FUNNY').toUpperCase()
+    const bottom = (axes?.bottom || 'MEAN').toUpperCase()
+    const left = (axes?.left || 'DOG').toUpperCase()
+    const right = (axes?.right || 'CAT').toUpperCase()
+
+    await supabase.from('placements').delete().eq('game_id', gameCode)
+    await supabase.from('assignments').delete().eq('game_id', gameCode)
+    const { data: updatedGame, error: gameErr } = await supabase
+      .from('games')
+      .update({
+        axis_top: top,
+        axis_bottom: bottom,
+        axis_left: left,
+        axis_right: right,
+        state: 'self_placement',
+      })
+      .eq('id', gameCode)
+      .select()
+      .single()
+
+    setOptimisticPlacements([])
+    setPlacements([])
+    setAssignments([])
+    if (!gameErr && updatedGame) setGame(updatedGame)
+  }
+
   return {
     game, players, assignments, placements: mergedPlacements,
     me, myTarget, mySelfPlacement, myAssignedPlacement,
     isHost, sessionId, playerId,
     loading,
-    submitPlacement, assignTargets, revealBoard,
+    submitPlacement, assignTargets, revealBoard, startNextRound,
   }
 }

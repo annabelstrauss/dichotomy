@@ -13,6 +13,8 @@ import Board from '../components/Board'
 import PlayerTray from '../components/PlayerTray'
 import PlayerChip from '../components/PlayerChip'
 import AlertBanner from '../components/AlertBanner'
+import PrimaryButton from '../components/PrimaryButton'
+import AxisInput from '../components/AxisInput'
 
 export default function GameBoard() {
   const { code } = useParams()
@@ -21,11 +23,18 @@ export default function GameBoard() {
     me, myTarget, mySelfPlacement, myAssignedPlacement,
     isHost,
     loading,
-    submitPlacement, assignTargets, revealBoard,
+    submitPlacement, assignTargets, revealBoard, startNextRound,
   } = useGame(code)
 
   const [activePlayer, setActivePlayer] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [nextRoundOpen, setNextRoundOpen] = useState(false)
+  const [nextRoundAxes, setNextRoundAxes] = useState({
+    top: 'FUNNY',
+    bottom: 'MEAN',
+    left: 'DOG',
+    right: 'CAT',
+  })
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -122,6 +131,29 @@ export default function GameBoard() {
     setSubmitting(false)
   }
 
+  function openNextRoundModal() {
+    if (!game) return
+    setNextRoundAxes({
+      top: game.axis_top || 'FUNNY',
+      bottom: game.axis_bottom || 'MEAN',
+      left: game.axis_left || 'DOG',
+      right: game.axis_right || 'CAT',
+    })
+    setNextRoundOpen(true)
+  }
+
+  const nextAxis = (key) => ({
+    value: nextRoundAxes[key],
+    onChange: (e) => setNextRoundAxes((a) => ({ ...a, [key]: e.target.value.toUpperCase() })),
+  })
+
+  async function handleNextRoundDone() {
+    setSubmitting(true)
+    await startNextRound(nextRoundAxes)
+    setNextRoundOpen(false)
+    setSubmitting(false)
+  }
+
   const hostTrayFabClass =
     'absolute left-1/2 z-30 -translate-x-1/2 rounded-full bg-violet-600 px-7 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(124,58,237,0.45)] transition-opacity active:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))]'
 
@@ -132,7 +164,7 @@ export default function GameBoard() {
         {/* Title + instruction overlay — banner hangs below header; board has top padding so axes never sit under it */}
         <div className="relative z-20 flex flex-shrink-0 flex-col px-4 pb-1 pt-[max(1rem,env(safe-area-inset-top,0px))]">
           <span className="font-rubik text-center text-[23px] font-extrabold italic tracking-tight text-ink">
-            DICHOTOMIES
+            DICHOTOMY
           </span>
           {!isRevealed && (
             <div className="pointer-events-none absolute left-4 right-4 top-full mt-1 flex justify-center">
@@ -190,8 +222,66 @@ export default function GameBoard() {
               Reveal 🎉
             </button>
           )}
+          {isHost && gameState === 'results' && (
+            <button
+              type="button"
+              onClick={openNextRoundModal}
+              disabled={submitting}
+              className={hostTrayFabClass}
+            >
+              Next round
+            </button>
+          )}
         </div>
       </div>
+
+      {nextRoundOpen && (
+        <div
+          className="fixed inset-0 z-40 flex items-end justify-center bg-black/45 p-4 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="next-round-title"
+          onClick={() => !submitting && setNextRoundOpen(false)}
+        >
+          <div
+            className="w-full max-w-[390px] rounded-[20px] bg-surface p-5 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="next-round-title" className="font-rubik text-[20px] font-extrabold italic tracking-tight text-ink">
+              Next round
+            </h2>
+            <p className="mt-1 text-[13px] text-muted">Set the axis labels for this round. Everyone&apos;s board will reset.</p>
+
+            <div className="mt-4 rounded-[16px] border border-[#E7E5E4] bg-bg p-4">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-muted mb-3">Axis labels</p>
+              <div className="flex justify-center mb-2">
+                <AxisInput placeholder="TOP" {...nextAxis('top')} />
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <AxisInput placeholder="LEFT" {...nextAxis('left')} />
+                <div className="relative flex-1 aspect-square rounded-[14px] border border-[#E7E5E4] bg-board-faint">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="h-[2px] w-full bg-board-line" />
+                  </div>
+                  <div className="absolute inset-0 flex justify-center">
+                    <div className="h-full w-[2px] bg-board-line" />
+                  </div>
+                </div>
+                <AxisInput placeholder="RIGHT" {...nextAxis('right')} />
+              </div>
+              <div className="flex justify-center">
+                <AxisInput placeholder="BOTTOM" {...nextAxis('bottom')} />
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <PrimaryButton onClick={handleNextRoundDone} disabled={submitting}>
+                {submitting ? 'Starting…' : 'Done'}
+              </PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Drag overlay — no snap-back: duration 0 kills the return animation */}
       <DragOverlay dropAnimation={{ duration: 0, easing: 'linear' }}>

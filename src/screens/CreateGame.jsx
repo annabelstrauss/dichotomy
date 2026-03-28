@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { nanoid } from 'nanoid'
 import { supabase } from '../lib/supabase'
 import PrimaryButton from '../components/PrimaryButton'
+import AxisInput from '../components/AxisInput'
 
 const DEFAULT_AXES = { top: 'FUNNY', bottom: 'MEAN', left: 'DOG', right: 'CAT' }
 
@@ -96,18 +97,5 @@ export default function CreateGame() {
         {loading ? 'Creating…' : 'Create & copy link'}
       </PrimaryButton>
     </div>
-  )
-}
-
-function AxisInput({ placeholder, value, onChange }) {
-  return (
-    <input
-      type="text"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      maxLength={12}
-      className="w-20 text-center bg-transparent border-b-2 border-[#E7E5E4] focus:border-primary py-1 text-[12px] font-bold text-ink placeholder:text-muted uppercase tracking-wider outline-none"
-    />
   )
 }

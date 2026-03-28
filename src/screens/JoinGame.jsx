@@ -78,7 +78,7 @@ export default function JoinGame() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-[24px] font-extrabold text-ink">Join this board</h1>
-        <p className="text-[13px] text-primary font-semibold mt-0.5">A Dichotomies room</p>
+        <p className="text-[13px] text-primary font-semibold mt-0.5">A Dichotomy room</p>
       </div>
 
       {/* Host: link copied confirmation */}
