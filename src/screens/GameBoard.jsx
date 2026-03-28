@@ -30,10 +30,10 @@ export default function GameBoard() {
   const [submitting, setSubmitting] = useState(false)
   const [nextRoundOpen, setNextRoundOpen] = useState(false)
   const [nextRoundAxes, setNextRoundAxes] = useState({
-    top: 'FUNNY',
-    bottom: 'MEAN',
-    left: 'DOG',
-    right: 'CAT',
+    top: 'MYSTERIOUS',
+    bottom: 'GAB',
+    left: 'BANT',
+    right: 'EARNEST',
   })
 
   const sensors = useSensors(
@@ -134,10 +134,10 @@ export default function GameBoard() {
   function openNextRoundModal() {
     if (!game) return
     setNextRoundAxes({
-      top: game.axis_top || 'FUNNY',
-      bottom: game.axis_bottom || 'MEAN',
-      left: game.axis_left || 'DOG',
-      right: game.axis_right || 'CAT',
+      top: game.axis_top || 'MYSTERIOUS',
+      bottom: game.axis_bottom || 'GAB',
+      left: game.axis_left || 'BANT',
+      right: game.axis_right || 'EARNEST',
     })
     setNextRoundOpen(true)
   }
@@ -254,12 +254,11 @@ export default function GameBoard() {
 
             <div className="mt-4 rounded-[16px] border border-[#E7E5E4] bg-bg p-4">
               <p className="text-[11px] font-bold uppercase tracking-wider text-muted mb-3">Axis labels</p>
-              <div className="flex justify-center mb-2">
-                <AxisInput placeholder="TOP" {...nextAxis('top')} />
-              </div>
-              <div className="flex items-center gap-2 mb-2">
-                <AxisInput placeholder="LEFT" {...nextAxis('left')} />
-                <div className="relative flex-1 aspect-square rounded-[14px] border border-[#E7E5E4] bg-board-faint">
+              <div className="relative">
+                <div
+                  className="pointer-events-none absolute left-1/2 top-1/2 z-0 aspect-square w-[clamp(96px,36vw,148px)] -translate-x-1/2 -translate-y-1/2 rounded-[14px] border border-[#E7E5E4] bg-board-faint"
+                  aria-hidden
+                >
                   <div className="absolute inset-0 flex items-center">
                     <div className="h-[2px] w-full bg-board-line" />
                   </div>
@@ -267,10 +266,24 @@ export default function GameBoard() {
                     <div className="h-full w-[2px] bg-board-line" />
                   </div>
                 </div>
-                <AxisInput placeholder="RIGHT" {...nextAxis('right')} />
-              </div>
-              <div className="flex justify-center">
-                <AxisInput placeholder="BOTTOM" {...nextAxis('bottom')} />
+                <div className="relative z-10 mb-2 flex justify-center">
+                  <AxisInput placeholder="TOP" {...nextAxis('top')} />
+                </div>
+                <div className="relative z-10 mb-2 flex items-center gap-2">
+                  <div className="flex min-w-0 flex-1 justify-end">
+                    <AxisInput placeholder="LEFT" {...nextAxis('left')} />
+                  </div>
+                  <div
+                    className="invisible aspect-square w-[clamp(96px,36vw,148px)] shrink-0 pointer-events-none"
+                    aria-hidden
+                  />
+                  <div className="flex min-w-0 flex-1 justify-start">
+                    <AxisInput placeholder="RIGHT" {...nextAxis('right')} />
+                  </div>
+                </div>
+                <div className="relative z-10 flex justify-center">
+                  <AxisInput placeholder="BOTTOM" {...nextAxis('bottom')} />
+                </div>
               </div>
             </div>
 

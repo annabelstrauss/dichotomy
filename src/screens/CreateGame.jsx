@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase'
 import PrimaryButton from '../components/PrimaryButton'
 import AxisInput from '../components/AxisInput'
 
-const DEFAULT_AXES = { top: 'FUNNY', bottom: 'MEAN', left: 'DOG', right: 'CAT' }
+const DEFAULT_AXES = { top: 'MYSTERIOUS', bottom: 'GAB', left: 'BANT', right: 'EARNEST' }
 
 export default function CreateGame() {
   const navigate = useNavigate()
@@ -25,10 +25,10 @@ export default function CreateGame() {
     const { error } = await supabase.from('games').insert({
       id: code,
       title: title || 'Dichotomy',
-      axis_top: axes.top || 'FUNNY',
-      axis_bottom: axes.bottom || 'MEAN',
-      axis_left: axes.left || 'DOG',
-      axis_right: axes.right || 'CAT',
+      axis_top: axes.top || 'MYSTERIOUS',
+      axis_bottom: axes.bottom || 'GAB',
+      axis_left: axes.left || 'BANT',
+      axis_right: axes.right || 'EARNEST',
       host_session_id: hostSessionId,
       state: 'self_placement',
     })
@@ -53,29 +53,41 @@ export default function CreateGame() {
       {/* Board + title + CTA — biased lower in the viewport for optical vertical balance */}
       <div className="flex-1 flex flex-col justify-center min-h-0 pt-10 pb-6">
         {/* Board preview */}
-        <div className="bg-white/40 rounded-[20px] px-3 py-5 mb-4 shadow-sm">
+        <div className="relative bg-white/40 rounded-[20px] px-3 py-5 mb-4 shadow-sm">
+          {/* Cross: centered in the card; label widths cannot shift it */}
+          <div
+            className="pointer-events-none absolute left-1/2 top-1/2 z-0 aspect-square w-[clamp(96px,36vw,148px)] -translate-x-1/2 -translate-y-1/2 rounded-[14px] bg-white/20"
+            aria-hidden
+          >
+            <div className="absolute inset-0 flex items-center">
+              <div className="h-[2px] w-full bg-board-line" />
+            </div>
+            <div className="absolute inset-0 flex justify-center">
+              <div className="h-full w-[2px] bg-board-line" />
+            </div>
+          </div>
+
           {/* Top */}
-          <div className="flex justify-center mb-2">
+          <div className="relative z-10 mb-2 flex justify-center">
             <AxisInput placeholder="TOP" {...axis('top')} />
           </div>
 
-          {/* Left / Right */}
-          <div className="flex items-center gap-1.5 mb-2">
-            <AxisInput placeholder="LEFT" widthClass="w-16" {...axis('left')} />
-            <div className="flex-1 min-w-0 aspect-square bg-white/20 rounded-[14px] relative">
-              {/* Cross lines */}
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full h-[2px] bg-board-line" />
-              </div>
-              <div className="absolute inset-0 flex justify-center">
-                <div className="h-full w-[2px] bg-board-line" />
-              </div>
+          {/* Left / spacer / Right — spacer matches cross so side columns stay symmetric */}
+          <div className="relative z-10 mb-2 flex items-center gap-1.5">
+            <div className="flex min-w-0 flex-1 justify-end">
+              <AxisInput placeholder="LEFT" {...axis('left')} />
             </div>
-            <AxisInput placeholder="RIGHT" widthClass="w-16" {...axis('right')} />
+            <div
+              className="invisible aspect-square w-[clamp(96px,36vw,148px)] shrink-0 pointer-events-none"
+              aria-hidden
+            />
+            <div className="flex min-w-0 flex-1 justify-start">
+              <AxisInput placeholder="RIGHT" {...axis('right')} />
+            </div>
           </div>
 
           {/* Bottom */}
-          <div className="flex justify-center">
+          <div className="relative z-10 flex justify-center">
             <AxisInput placeholder="BOTTOM" {...axis('bottom')} />
           </div>
         </div>

@@ -164,10 +164,10 @@ export function useGame(gameCode) {
 
   async function startNextRound(axes) {
     if (!isHost) return
-    const top = (axes?.top || 'FUNNY').toUpperCase()
-    const bottom = (axes?.bottom || 'MEAN').toUpperCase()
-    const left = (axes?.left || 'DOG').toUpperCase()
-    const right = (axes?.right || 'CAT').toUpperCase()
+    const top = (axes?.top || 'MYSTERIOUS').toUpperCase()
+    const bottom = (axes?.bottom || 'GAB').toUpperCase()
+    const left = (axes?.left || 'BANT').toUpperCase()
+    const right = (axes?.right || 'EARNEST').toUpperCase()
 
     await supabase.from('placements').delete().eq('game_id', gameCode)
     await supabase.from('assignments').delete().eq('game_id', gameCode)
