@@ -47,14 +47,11 @@ export default function CreateGame() {
     <div className="min-h-screen bg-bg flex flex-col px-4 max-w-[390px] mx-auto pt-[max(2rem,env(safe-area-inset-top,0px))] pb-[max(2rem,env(safe-area-inset-bottom,0px))]">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="font-rubik text-[28px] font-extrabold italic tracking-tight text-ink">DICHOTOMY</h1>
-        <p className="text-[13px] text-muted mt-1">Party game on a 2×2 board. Place your friends.</p>
+        <h1 className="font-rubik text-[28px] font-extrabold italic tracking-tight text-ink text-center">DICHOTOMY</h1>
       </div>
 
       {/* Board preview */}
       <div className="bg-surface rounded-[20px] p-5 mb-4 shadow-sm">
-        <p className="text-[12px] font-bold text-muted uppercase tracking-wider mb-3">Axis labels</p>
-
         {/* Top */}
         <div className="flex justify-center mb-2">
           <AxisInput placeholder="TOP" {...axis('top')} />
