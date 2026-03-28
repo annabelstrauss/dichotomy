@@ -76,60 +76,61 @@ export default function JoinGame() {
   return (
     <div className="min-h-screen bg-bg flex flex-col px-4 max-w-[390px] mx-auto pt-[max(2rem,env(safe-area-inset-top,0px))] pb-[max(2rem,env(safe-area-inset-bottom,0px))]">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-[24px] font-extrabold text-ink">Join this board</h1>
-        <p className="text-[13px] text-primary font-semibold mt-0.5">A Dichotomy room</p>
+      <div className="shrink-0 mb-2">
+        <h1 className="font-rubik text-[28px] font-extrabold italic tracking-tight text-ink text-center">DICHOTOMY</h1>
       </div>
 
-      {/* Host: link copied confirmation */}
-      {isHost && (
-        <div className="flex items-center gap-2 bg-[#FFEDD5] border border-[#FDBA74] rounded-[14px] px-3.5 py-2.5 mb-4">
-          <span className="text-sm">🔗</span>
-          <p className="text-[13px] text-ink font-medium">Link copied! Share it with your friends while you set up.</p>
-        </div>
-      )}
-
-      {/* Name input */}
-      <div className="mb-3">
-        <input
-          type="text"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full bg-surface border border-[#E7E5E4] rounded-[14px] px-4 py-3.5 text-[15px] text-ink placeholder:text-muted outline-none focus:border-primary"
-          autoFocus
-        />
-      </div>
-
-      {/* Photo upload */}
-      <div
-        className="w-full rounded-[20px] border-2 border-dashed border-[#FDBA74] flex flex-col items-center justify-center gap-2 cursor-pointer mb-5"
-        style={{ height: 188 }}
-        onClick={() => fileRef.current?.click()}
-      >
-        {photoPreview ? (
-          <img src={photoPreview} alt="preview" className="h-full w-full object-cover rounded-[18px]" />
-        ) : (
-          <>
-            <div className="w-10 h-10 rounded-full bg-[#FFEDD5] flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </div>
-            <span className="text-[13px] text-muted font-medium">Upload or take a picture</span>
-          </>
+      <div className="flex-1 flex flex-col justify-center min-h-0">
+        {/* Host: link copied confirmation */}
+        {isHost && (
+          <div className="flex items-center gap-2 bg-[#FFEDD5] border border-[#FDBA74] rounded-[14px] px-3.5 py-2.5 mb-4">
+            <span className="text-sm">🔗</span>
+            <p className="text-[13px] text-ink font-medium">Link copied! Share it with your friends while you set up.</p>
+          </div>
         )}
-        <input ref={fileRef} type="file" accept="image/*" capture="user" onChange={handleFileChange} className="hidden" />
+
+        {/* Name input */}
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full bg-surface border border-[#E7E5E4] rounded-[14px] px-4 py-3.5 text-[15px] text-ink placeholder:text-muted outline-none focus:border-primary"
+            autoFocus
+          />
+        </div>
+
+        {/* Photo upload */}
+        <div
+          className="w-full rounded-[20px] border-2 border-dashed border-[#FDBA74] flex flex-col items-center justify-center gap-2 cursor-pointer mb-5"
+          style={{ height: 188 }}
+          onClick={() => fileRef.current?.click()}
+        >
+          {photoPreview ? (
+            <img src={photoPreview} alt="preview" className="h-full w-full object-cover rounded-[18px]" />
+          ) : (
+            <>
+              <div className="w-10 h-10 rounded-full bg-[#FFEDD5] flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FB923C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <span className="text-[13px] text-muted font-medium">Upload or take a picture</span>
+            </>
+          )}
+          <input ref={fileRef} type="file" accept="image/*" capture="user" onChange={handleFileChange} className="hidden" />
+        </div>
+
+        {error && <p className="text-red-500 text-[13px] mb-3">{error}</p>}
+
+        <PrimaryButton onClick={handleJoin} disabled={loading || !name.trim()}>
+          {loading ? 'Joining…' : 'Join the board'}
+        </PrimaryButton>
       </div>
 
-      {error && <p className="text-red-500 text-[13px] mb-3">{error}</p>}
-
-      <PrimaryButton onClick={handleJoin} disabled={loading || !name.trim()}>
-        {loading ? 'Joining…' : 'Join the board'}
-      </PrimaryButton>
-
-      <p className="text-[12px] text-muted text-center mt-4 px-2">
+      <p className="shrink-0 text-[12px] text-muted text-center mt-4 px-2">
         By joining you agree to share your name and photo with other players in this room.
       </p>
     </div>

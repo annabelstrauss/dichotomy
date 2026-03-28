@@ -1,4 +1,4 @@
-export default function AxisInput({ placeholder, value, onChange }) {
+export default function AxisInput({ placeholder, value, onChange, widthClass = 'w-20' }) {
   return (
     <input
       type="text"
@@ -6,7 +6,7 @@ export default function AxisInput({ placeholder, value, onChange }) {
       value={value}
       onChange={onChange}
       maxLength={12}
-      className="w-20 text-center bg-transparent border-b-2 border-[#E7E5E4] focus:border-primary py-1 text-[12px] font-bold text-ink placeholder:text-muted uppercase tracking-wider outline-none"
+      className={`${widthClass} shrink-0 text-center bg-transparent border-b-2 border-primary py-1 text-[12px] font-bold text-ink placeholder:text-muted uppercase tracking-wider outline-none`}
     />
   )
 }
