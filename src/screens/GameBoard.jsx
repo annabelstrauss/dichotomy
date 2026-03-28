@@ -131,7 +131,9 @@ export default function GameBoard() {
 
         {/* Title + instruction overlay — banner hangs below header; board has top padding so axes never sit under it */}
         <div className="relative z-20 flex flex-shrink-0 flex-col px-4 pb-1 pt-[max(1rem,env(safe-area-inset-top,0px))]">
-          <span className="text-center text-[23px] font-extrabold text-ink">{game.title || 'Dichotomies'}</span>
+          <span className="font-rubik text-center text-[23px] font-extrabold italic tracking-tight text-ink">
+            DICHOTOMIES
+          </span>
           {!isRevealed && (
             <div className="pointer-events-none absolute left-4 right-4 top-full mt-1 flex justify-center">
               {gameState === 'self_placement' && !mySelfPlacement && (

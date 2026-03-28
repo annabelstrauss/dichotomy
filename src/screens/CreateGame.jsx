@@ -23,7 +23,7 @@ export default function CreateGame() {
     const hostSessionId = nanoid()
     const { error } = await supabase.from('games').insert({
       id: code,
-      title: title || 'Dichotomies',
+      title: title || 'Dichotomy',
       axis_top: axes.top || 'FUNNY',
       axis_bottom: axes.bottom || 'MEAN',
       axis_left: axes.left || 'DOG',
@@ -46,7 +46,7 @@ export default function CreateGame() {
     <div className="min-h-screen bg-bg flex flex-col px-4 max-w-[390px] mx-auto pt-[max(2rem,env(safe-area-inset-top,0px))] pb-[max(2rem,env(safe-area-inset-bottom,0px))]">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[28px] font-extrabold text-ink">Dichotomies</h1>
+        <h1 className="font-rubik text-[28px] font-extrabold italic tracking-tight text-ink">DICHOTOMY</h1>
         <p className="text-[13px] text-muted mt-1">Party game on a 2×2 board. Place your friends.</p>
       </div>
 
